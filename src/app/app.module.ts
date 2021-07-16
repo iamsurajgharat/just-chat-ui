@@ -6,13 +6,15 @@ import { AppComponent } from './app.component';
 import { SigninComponent } from './signin/signin.component';
 import { ChatListComponent } from './chat-list/chat-list.component'
 
-import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ChatDetailComponent } from './chat-detail/chat-detail.component'
 
 @NgModule({
   declarations: [
     AppComponent,
     SigninComponent,
-    ChatListComponent
+    ChatListComponent,
+    ChatDetailComponent
   ],
   imports: [
     BrowserModule,
