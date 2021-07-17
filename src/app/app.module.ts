@@ -8,12 +8,14 @@ import { ChatListComponent } from './chat-list/chat-list.component'
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import { ChatDetailComponent } from './chat-detail/chat-detail.component'
 
 @NgModule({
   declarations: [
     AppComponent,
     SigninComponent,
-    ChatListComponent
+    ChatListComponent,
+    ChatDetailComponent
   ],
   imports: [
     BrowserModule,
