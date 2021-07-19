@@ -4,8 +4,8 @@ import { SigninComponent } from './signin/signin.component'
 import { ChatListComponent } from './chat-list/chat-list.component'
 
 const routes: Routes = [
-  { path: 'signin', component: SigninComponent },
   { path: 'chats', component: ChatListComponent },
+  { path: 'signin', component: SigninComponent },
   { path: '', pathMatch: 'full', redirectTo: '/signin' },
 ];
 

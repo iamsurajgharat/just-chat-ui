@@ -27,7 +27,7 @@ export class SigninComponent implements OnInit {
     //console.warn(this.userDetails.get('username')?.value)
     const userid = this.userDetails.get('username')!.value as string
     const name = this.userDetails.get('displayName')!.value as string
-    const response = this.backendService.connect({ userid: userid, displayName: name })
+    const response = this.backendService.connect({ id: userid, name: name })
     if (response.isSuccess) {
       alert("Yahh I'am in")
     }
