@@ -1,1 +1,27 @@
-<p>chat-detail works!</p>
+<div *ngIf="chat" class="d-flex flex-column h-100">
+    <div class="row border">
+        <div class="col text-truncate h4">
+            {{chat.name}}
+        </div>
+        <div class="col text-truncate">
+            <button type="button" [ngClass]="'d-sm-block d-md-none btn btn-secondary btn-sm'" (click)="doClose()">Close</button>
+        </div>
+    </div>
+    <div class="row border flex-fill overflow-scroll">
+        <div class="chat-messages">
+            <p class="from-them">Hey<sub>&nbsp;3.27 PM</sub></p>
+            <p class="from-them">How are you doint today<sub><small>&nbsp;3.27 PM</small></sub></p>
+            <p class="from-me">Hi<sub>&nbsp;3.27 PM</sub></p>
+            <p class="from-me">I am great. I just want to tell you, you are awesome<sub>&nbsp;3.27 PM</sub></p>
+        </div>
+    </div>
+    <div class="row border">
+        <div class="input-group">
+            <input type="text" class="form-control">
+            <button type="button" class="btn btn-secondary" id="buttonAfter">Send</button>
+        </div>
+    </div>
+</div>
+<div *ngIf="!chat">
+    No chat is selected
+</div>

@@ -1,13 +1,16 @@
 <form [formGroup]="userDetails" (ngSubmit)="onSubmit()">
-    <div class="mb-3">
-        <label for="username" class="form-label">Username</label>
-        <input type="text" class="form-control" id="username" aria-describedby="usernameHelp" formControlName="username"
-            autocomplete="off">
-        <div id="usernameHelp" class="form-text">This should be unique acrosss all users</div>
-    </div>
-    <div class="mb-3">
-        <label for="displayName" class="form-label">Display Name</label>
-        <input type="text" class="form-control" id="displayName" formControlName="displayName" autocomplete="off">
-    </div>
-    <button type="submit" class="btn btn-primary" [disabled]="!userDetails.valid">Submit</button>
+    <fieldset>
+        <legend>Sign in form</legend>
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" aria-describedby="usernameHelp"
+                formControlName="username" autocomplete="off">
+            <div id="usernameHelp" class="form-text">This should be unique acrosss all users</div>
+        </div>
+        <div class="mb-3">
+            <label for="displayName" class="form-label">Display Name</label>
+            <input type="text" class="form-control" id="displayName" formControlName="displayName" autocomplete="off">
+        </div>
+        <button type="submit" class="btn btn-primary" [disabled]="!userDetails.valid">Submit</button>
+    </fieldset>
 </form>

@@ -19,6 +19,7 @@ export class InboundChatMessage extends ChatMessage {
     readTime?: Date
     constructor(public id: string, public body: string, public sender: UserProfile) {
         super(id, body)
+        this.sentTime = new Date()
         this.receiveTime = new Date()
     }
 
@@ -32,6 +33,7 @@ export class OutboundChatMessage extends ChatMessage {
     deliveryDetails = new Map<string, DeliveryDetail>()
     constructor(public id: string, public body: string, public recipients: UserProfile[]) {
         super(id, body)
+        this.sentTime = new Date()
         for (let recipient of recipients) {
             this.deliveryDetails.set(recipient.id, { userId: recipient.id, status: 'New' })
         }

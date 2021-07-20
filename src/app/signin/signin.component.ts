@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { BackendService } from '../services/backend.service';
+import {Router, ActivatedRoute} from '@angular/router'
 
 @Component({
   selector: 'app-signin',
@@ -17,7 +18,7 @@ export class SigninComponent implements OnInit {
     displayName: new FormControl('', Validators.required)
   })
 
-  constructor(private backendService: BackendService) { }
+  constructor(private backendService: BackendService, private router:Router, private route:ActivatedRoute) { }
 
   ngOnInit(): void {
 
@@ -29,7 +30,7 @@ export class SigninComponent implements OnInit {
     const name = this.userDetails.get('displayName')!.value as string
     const response = this.backendService.connect({ id: userid, name: name })
     if (response.isSuccess) {
-      alert("Yahh I'am in")
+      this.router.navigate(["chats"])
     }
   }
 

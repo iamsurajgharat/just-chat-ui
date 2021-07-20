@@ -1,28 +1,38 @@
-<div class="container">
-    <div class="row">
-        <div class="col col-12 col-md-6">
-            <div class="row">
-                <div class="col">
-                    {{userProfile.name}} - thats current user, by the way!
+<div class="container-fluid vh-100">
+    <div class="row h-100">
+        <div [ngClass]="selectedChat ? 'd-none d-sm-none d-md-block col col-12 col-md-6 h-100' : 'col col-12 col-md-6 h-100'" >
+            <div class="d-flex flex-column h-100">
+                <div class="h4 border">
+                    {{userProfile.name}}
                 </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    Search box would come here
+                <div class="border">
+                    <div class="input-group">
+                        <input type="text" class="form-control" aria-label="Text input with button" aria-describedby="buttonAfter">
+                        <button type="button" class="btn btn-secondary" id="buttonAfter">Search</button>
+                      </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <div class="container">
-                        <div class="row" *ngFor="let chat of chats">
-                            <div class="row">{{chat.name}}</div>
+                <div class="flex-fill overflow-scroll">
+                    <div class="chat-item row border" *ngFor="let chat of chats" (click)="selectChat(chat)">
+                        <div class="row">
+                            <div class="col h6">
+                                    {{chat.name}}
+                            </div>
+                            <div class="col">{{chat.lastMessage?.sentTime | date}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col text-truncate">{{chat.lastMessage?.body}}</div>
+                            <div class="col">
+                                <div class="form-check form-switch">
+                                    <input type="checkbox" class="form-check-input" id="switchDefault2" checked="">
+                                    <label class="form-check-label" for="switchDefault2">Pinned</label>
+                                  </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col col-12 col-md-6 hidden-lg">
-            <app-chat-detail></app-chat-detail>
-        </div>
+        <app-chat-detail [ngClass]="!selectedChat ? 'd-none d-sm-none d-md-block col col-12 col-md-6 h-100' : 'col col-12 col-md-6 h-100'" 
+        [chat]="selectedChat" (close)="unselectChat($event)"></app-chat-detail>
     </div>
 </div>

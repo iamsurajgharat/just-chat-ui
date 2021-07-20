@@ -7,6 +7,7 @@ const routes: Routes = [
   { path: 'chats', component: ChatListComponent },
   { path: 'signin', component: SigninComponent },
   { path: '', pathMatch: 'full', redirectTo: '/signin' },
+  { path: '**', redirectTo: '/signin' },
 ];
 
 @NgModule({

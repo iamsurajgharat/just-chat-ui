@@ -10,14 +10,16 @@ export class Chat {
     addMessage(message: ChatMessage) {
         this.messages.push(message)
     }
+
+    get lastMessage():ChatMessage|null{
+        return this.messages.length === 0 ? null : this.messages[this.messages.length-1]
+    }
 }
 
 export class SingleChat extends Chat {
     constructor(public peer: UserProfile) {
         super(peer.name)
     }
-
-
 }
 
 
