@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { UserProfile } from '../models/user-profile';
-import { BaseMessage } from '../models/ws-messages';
-import {webSocket, WebSocketSubject} from 'rxjs/webSocket'
+import { BaseMessage, ConnectedResponse, ConnectRequest, TypeNameForResponseConnected } from '../models/ws-messages';
+import {webSocket, WebSocketSubject, WebSocketSubjectConfig} from 'rxjs/webSocket'
+import  * as _  from 'lodash'
 
 
 @Injectable({
@@ -16,14 +17,23 @@ export class BackendService {
   // connect
   connect(user: UserProfile): ConnectResponse {
 
-    const webSocketSubject = webSocket("ws://localhost:8081/socket3")
+    
+    const webSocketSubjectConfig : WebSocketSubjectConfig<BaseMessage> = {
+      url : `ws://localhost:8081/socket3?userId=${encodeURIComponent(user.id)}&name=${encodeURIComponent(user.name)}`,
+      deserializer : this.webSocketResponseDeserializer
+    }
+
+    //const webSocketSubject = webSocket("ws://localhost:8081/socket3")
+    const webSocketSubject = webSocket(webSocketSubjectConfig)
     webSocketSubject.subscribe({
-      next(x) { console.log('got value ' + x); },
+      next(x) { console.log('got value ' + x + 'of type '+ (x as ConnectedResponse).ackMsg); },
       error(err) { console.error('something wrong occurred: ' + err); },
       complete() { console.log('we socket done'); }
     });
-    webSocketSubject.next({userId: 'some message', name:'Suraj Gharat'})
-    webSocketSubject.next({message: {userId: 'some message', name:'Suraj Gharat'}});
+    webSocketSubject.next(new ConnectRequest(user.id, user.name))
+
+
+    //webSocketSubject.next({message: {userId: 'some message', name:'Suraj Gharat'}});
 
 
     //webSocketSubject.complete(); // Closes the connection.
@@ -35,6 +45,18 @@ export class BackendService {
       isSuccess: true,
       stream: of()
     }
+  }
+
+  webSocketResponseDeserializer(event:MessageEvent<any>):BaseMessage{
+    const responseObj = JSON.parse(event.data)
+    if(_.has(responseObj, '_type')){
+      const type = _.get(responseObj, '_type')
+      switch(type){
+        case TypeNameForResponseConnected:
+          return new ConnectedResponse(_.get(responseObj, 'ackMsg'))
+      }
+    }
+    return new ConnectedResponse('')
   }
 
   // disconnect
@@ -53,5 +75,5 @@ export class BackendService {
 export type ConnectResponse = {
   isSuccess: boolean,
   errorDetails?: string,
-  stream: Observable<BaseMessage>
+  stream: Observable<string>
 }

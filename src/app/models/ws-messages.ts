@@ -1,12 +1,23 @@
-import { UserProfile } from "./user-profile";
+const TypeNameForResponseConnected = 'actors.UserSessionActor2.Connected'
 
-export class WsMessages {
+export interface BaseMessage{
 }
 
-export interface BaseMessage {
-    id: string
+export interface BaseIncomingMessage extends BaseMessage{
 }
 
-export interface Connect extends BaseMessage {
-    user: UserProfile
+export class ConnectedResponse implements BaseIncomingMessage{
+    constructor(public ackMsg:string){}
 }
+
+
+export interface BaseOutgoingMessage extends BaseMessage{
+    _type:string
+}
+
+export class ConnectRequest implements BaseOutgoingMessage{
+    _type = 'actors.UserSessionActor2.Connect'
+    constructor(public userId:string, public name:string){}
+}
+
+export {TypeNameForResponseConnected}
