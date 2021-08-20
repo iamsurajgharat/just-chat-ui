@@ -3,7 +3,7 @@
         <div [ngClass]="selectedChat ? 'd-none d-sm-none d-md-block col col-12 col-md-6 h-100' : 'col col-12 col-md-6 h-100'" >
             <div class="d-flex flex-column h-100">
                 <div class="h4 border">
-                    {{userProfile.name}}
+                    {{userProfile.name}} ({{connectionStatus}})
                 </div>
                 <div class="border">
                     <div class="input-group">

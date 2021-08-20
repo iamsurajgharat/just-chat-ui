@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import {map} from 'rxjs/operators'
 import { UserProfile } from '../models/user-profile';
 import { BaseMessage, ConnectedResponse, ConnectRequest, TypeNameForResponseConnected } from '../models/ws-messages';
-import {webSocket, WebSocketSubject, WebSocketSubjectConfig} from 'rxjs/webSocket'
-import  * as _  from 'lodash'
+import { webSocket, WebSocketSubject, WebSocketSubjectConfig } from 'rxjs/webSocket'
+import * as _ from 'lodash'
 
 
 @Injectable({
@@ -11,47 +12,52 @@ import  * as _  from 'lodash'
 })
 export class BackendService {
 
+  isConnected :boolean = false
+  webSocketSubject:WebSocketSubject<BaseMessage>|undefined
+
   constructor() { }
 
   // actions we need to support
   // connect
   connect(user: UserProfile): ConnectResponse {
 
-    
-    const webSocketSubjectConfig : WebSocketSubjectConfig<BaseMessage> = {
-      url : `ws://localhost:8081/socket3?userId=${encodeURIComponent(user.id)}&name=${encodeURIComponent(user.name)}`,
-      deserializer : this.webSocketResponseDeserializer
+
+    const webSocketSubjectConfig: WebSocketSubjectConfig<BaseMessage> = {
+      url: `ws://localhost:8081/socket3?userId=${encodeURIComponent(user.id)}&name=${encodeURIComponent(user.name)}`,
+      deserializer: this.webSocketResponseDeserializer
     }
 
     //const webSocketSubject = webSocket("ws://localhost:8081/socket3")
-    const webSocketSubject = webSocket(webSocketSubjectConfig)
-    webSocketSubject.subscribe({
-      next(x) { console.log('got value ' + x + 'of type '+ (x as ConnectedResponse).ackMsg); },
-      error(err) { console.error('something wrong occurred: ' + err); },
-      complete() { console.log('we socket done'); }
-    });
-    webSocketSubject.next(new ConnectRequest(user.id, user.name))
+    this.webSocketSubject = webSocket(webSocketSubjectConfig)
+    // webSocketSubject.subscribe({
+    //   next(x) { console.log('got value ' + x + 'of type ' + (x as ConnectedResponse).ackMsg); },
+    //   error(err) { console.error('something wrong occurred: ' + err); },
+    //   complete() { console.log('we socket done'); }
+    // });
+    // webSocketSubject.next(new ConnectRequest(user.id, user.name))
 
 
     //webSocketSubject.next({message: {userId: 'some message', name:'Suraj Gharat'}});
 
 
     //webSocketSubject.complete(); // Closes the connection.
- 
+
     //webSocketSubject.error({code: 4000, reason: 'I think our app just broke!'});
+
+    this.isConnected = true
 
     // try to establish ws connection
     return {
       isSuccess: true,
-      stream: of()
+      stream: this.webSocketSubject
     }
   }
 
-  webSocketResponseDeserializer(event:MessageEvent<any>):BaseMessage{
+  webSocketResponseDeserializer(event: MessageEvent<any>): BaseMessage {
     const responseObj = JSON.parse(event.data)
-    if(_.has(responseObj, '_type')){
+    if (_.has(responseObj, '_type')) {
       const type = _.get(responseObj, '_type')
-      switch(type){
+      switch (type) {
         case TypeNameForResponseConnected:
           return new ConnectedResponse(_.get(responseObj, 'ackMsg'))
       }
@@ -75,5 +81,5 @@ export class BackendService {
 export type ConnectResponse = {
   isSuccess: boolean,
   errorDetails?: string,
-  stream: Observable<string>
+  stream: WebSocketSubject<BaseMessage>
 }
