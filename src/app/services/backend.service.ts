@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import {map} from 'rxjs/operators'
 import { UserProfile } from '../models/user-profile';
-import { BaseMessage, ConnectedResponse, ConnectRequest, TypeNameForResponseConnected } from '../models/ws-messages';
+import { allBaseMessages, BaseMessage, ConnectedResponse, ConnectRequest, PinnedChats, TypeNameForResponseConnected, TypeNameForResponsePinnedChats, TypeNameForResponseSingleChat, TypeNameForResponseUserProfile } from '../models/ws-messages';
 import { webSocket, WebSocketSubject, WebSocketSubjectConfig } from 'rxjs/webSocket'
 import * as _ from 'lodash'
+import { SingleChat } from '../models/chat';
 
 
 @Injectable({
@@ -55,14 +56,25 @@ export class BackendService {
 
   webSocketResponseDeserializer(event: MessageEvent<any>): BaseMessage {
     const responseObj = JSON.parse(event.data)
+    return this.convertObjToBaseMessage(responseObj) as BaseMessage
+  }
+
+  convertObjToBaseMessage(responseObj:any) : BaseMessage{
     if (_.has(responseObj, '_type')) {
       const type = _.get(responseObj, '_type')
       switch (type) {
         case TypeNameForResponseConnected:
           return new ConnectedResponse(_.get(responseObj, 'ackMsg'))
+        case TypeNameForResponsePinnedChats:
+          return PinnedChats.fromAnyObj(responseObj)
       }
     }
     return new ConnectedResponse('')
+  }
+
+  convertArrayToBaseMessages(responseObj:any): BaseMessage[]{
+    if(!_.isArray(responseObj)) return []
+    return _.toArray(responseObj).map(x => this.convertObjToBaseMessage(x))
   }
 
   // disconnect

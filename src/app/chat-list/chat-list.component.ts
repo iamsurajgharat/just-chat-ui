@@ -3,8 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Chat, GroupChat, SingleChat } from '../models/chat';
 import { InboundChatMessage, OutboundChatMessage } from '../models/chat-message';
 import { UserProfile } from '../models/user-profile';
-import { BaseMessage, ConnectedResponse } from '../models/ws-messages';
+import { BaseMessage, ConnectedResponse, PinnedChats } from '../models/ws-messages';
 import { BackendService } from '../services/backend.service'
+import * as _ from 'lodash'
 
 @Component({
   selector: 'app-chat-list',
@@ -14,7 +15,7 @@ import { BackendService } from '../services/backend.service'
 export class ChatListComponent implements OnInit {
   userProfile!: UserProfile
   connectionStatus : 'Not Started'|'Connecting' | 'Connected' | 'Closed' | 'Error' = 'Not Started'
-  chats: Chat[] = []
+  chats: Map<string,Chat> = new Map<string,Chat>()
   selectedChat?: Chat
   constructor(private backendService: BackendService, private router: Router, private route: ActivatedRoute) { }
 
@@ -43,25 +44,26 @@ export class ChatListComponent implements OnInit {
     chat2.addMessage(message21)
     chat2.addMessage(message22)
 
-    this.chats.push(chat1)
-    this.chats.push(chat1)
-    this.chats.push(chat1)
-    this.chats.push(chat1)
-    this.chats.push(chat1)
-    this.chats.push(chat1)
-    this.chats.push(chat1)
-    this.chats.push(chat1)
-    this.chats.push(chat2)
-    this.chats.push(chat2)
-    this.chats.push(chat2)
-    this.chats.push(chat2)
-    this.chats.push(chat2)
-    this.chats.push(chat2)
-    this.chats.push(chat2)
-    this.chats.push(chat2)
-    this.chats.push(chat2)
-    this.chats.push(chat2)
-    this.chats.push(chat2)
+    this.chats.set(chat1.getChatId(), chat1)
+    this.chats.set(chat1.getChatId(), chat1)
+    this.chats.set(chat1.getChatId(), chat1)
+    this.chats.set(chat1.getChatId(), chat1)
+    this.chats.set(chat1.getChatId(), chat1)
+    this.chats.set(chat1.getChatId(), chat1)
+    this.chats.set(chat1.getChatId(), chat1)
+    this.chats.set(chat1.getChatId(), chat1)
+    this.chats.set(chat1.getChatId(), chat1)
+    this.chats.set(chat2.getChatId(), chat2)
+    this.chats.set(chat2.getChatId(), chat2)
+    this.chats.set(chat2.getChatId(), chat2)
+    this.chats.set(chat2.getChatId(), chat2)
+    this.chats.set(chat2.getChatId(), chat2)
+    this.chats.set(chat2.getChatId(), chat2)
+    this.chats.set(chat2.getChatId(), chat2)
+    this.chats.set(chat2.getChatId(), chat2)
+    this.chats.set(chat2.getChatId(), chat2)
+    this.chats.set(chat2.getChatId(), chat2)
+    this.chats.set(chat2.getChatId(), chat2)
   }
 
   selectChat(chat: Chat) {
@@ -81,8 +83,12 @@ export class ChatListComponent implements OnInit {
   }
 
   private processMessageFromServer(message:BaseMessage){
+
     if(message instanceof ConnectedResponse){
       this.connectionStatus = 'Connected'
+    }
+    else if(message instanceof PinnedChats){
+      this.merge(message.chats)
     }
   }
 
@@ -102,6 +108,13 @@ export class ChatListComponent implements OnInit {
       complete : this.processCompleteSignalFromServer
     })
     this.connectionStatus = 'Connecting'
+  }
+
+  private merge(newChats:Chat[]){
+    // do not accept new chat if the chat with same id alredy present
+    _.forEach(newChats, (chat, _) => {
+      if(this.chats.has(chat.getChatId())) return
+    })
   }
 
 }
