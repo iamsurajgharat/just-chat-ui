@@ -12,15 +12,15 @@
                       </div>
                 </div>
                 <div class="flex-fill overflow-scroll">
-                    <div class="chat-item row border" *ngFor="let chat of chats" (click)="selectChat(chat)">
+                    <div class="chat-item row border" *ngFor="let chat of chats" (click)="selectChat(chat[1])">
                         <div class="row">
                             <div class="col h6">
-                                    {{chat.name}}
+                                    {{chat[1].name}}
                             </div>
-                            <div class="col">{{chat.lastMessage?.sentTime | date}}</div>
+                            <div class="col">{{chat[1].lastMessage?.sentTime | date}}</div>
                         </div>
                         <div class="row">
-                            <div class="col text-truncate">{{chat.lastMessage?.body}}</div>
+                            <div class="col text-truncate">{{chat[1].lastMessage?.body}}</div>
                             <div class="col">
                                 <div class="form-check form-switch">
                                     <input type="checkbox" class="form-check-input" id="switchDefault2" checked="">

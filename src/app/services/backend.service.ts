@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import {map} from 'rxjs/operators'
 import { UserProfile } from '../models/user-profile';
-import { allBaseMessages, BaseMessage, ConnectedResponse, ConnectRequest, PinnedChats, TypeNameForResponseConnected, TypeNameForResponsePinnedChats, TypeNameForResponseSingleChat, TypeNameForResponseUserProfile } from '../models/ws-messages';
+import { allBaseMessages, BaseMessage, ConnectedResponse, ConnectRequest, InvalidMessage, PinnedChats, TypeName_ResponseConnected, TypeName_ResponsePinnedChats, TypeName_ResponseSingleChat, TypeName_ResponseUserProfile } from '../models/ws-messages';
 import { webSocket, WebSocketSubject, WebSocketSubjectConfig } from 'rxjs/webSocket'
 import * as _ from 'lodash'
 import { SingleChat } from '../models/chat';
@@ -25,7 +25,7 @@ export class BackendService {
 
     const webSocketSubjectConfig: WebSocketSubjectConfig<BaseMessage> = {
       url: `ws://localhost:8081/socket3?userId=${encodeURIComponent(user.id)}&name=${encodeURIComponent(user.name)}`,
-      deserializer: this.webSocketResponseDeserializer
+      deserializer: this.webSocketResponseDeserializer.bind(this)
     }
 
     //const webSocketSubject = webSocket("ws://localhost:8081/socket3")
@@ -63,10 +63,10 @@ export class BackendService {
     if (_.has(responseObj, '_type')) {
       const type = _.get(responseObj, '_type')
       switch (type) {
-        case TypeNameForResponseConnected:
-          return new ConnectedResponse(_.get(responseObj, 'ackMsg'))
-        case TypeNameForResponsePinnedChats:
-          return PinnedChats.fromAnyObj(responseObj)
+        case TypeName_ResponseConnected:
+          return ConnectedResponse.fromAnyObj(responseObj) || InvalidMessage.getInstance(responseObj)
+        case TypeName_ResponsePinnedChats:
+          return PinnedChats.fromAnyObj(responseObj) || InvalidMessage.getInstance(responseObj)
       }
     }
     return new ConnectedResponse('')

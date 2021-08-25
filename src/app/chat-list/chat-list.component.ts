@@ -3,9 +3,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Chat, GroupChat, SingleChat } from '../models/chat';
 import { InboundChatMessage, OutboundChatMessage } from '../models/chat-message';
 import { UserProfile } from '../models/user-profile';
-import { BaseMessage, ConnectedResponse, PinnedChats } from '../models/ws-messages';
+import { BaseMessage, ConnectedResponse, ConnectRequest, PinnedChats } from '../models/ws-messages';
 import { BackendService } from '../services/backend.service'
 import * as _ from 'lodash'
+import { random } from 'lodash';
 
 @Component({
   selector: 'app-chat-list',
@@ -23,11 +24,11 @@ export class ChatListComponent implements OnInit {
 
     if(!this.backendService.isConnected) this.router.navigate(["signin"])
 
+    this.userProfile = new UserProfile('iamsurajgharat'+ random(), 'Suraj Gharat')
     this.subscribe()
 
     // get user details along with ws connection as input
     // fow now it hard coded
-    this.userProfile = new UserProfile('iamsurajgharat', 'Suraj Gharat')
 
     const user1 = new UserProfile("user1", "Chandler Bing")
     const user2 = new UserProfile("user2", "Rachel Green")
@@ -94,7 +95,7 @@ export class ChatListComponent implements OnInit {
 
   private processErrorSignalFromServer(error:any){
     this.connectionStatus = 'Error'
-    this.subscribe()
+    console.log("Error from server :"+error)
   }
 
   private processCompleteSignalFromServer(){
@@ -103,17 +104,20 @@ export class ChatListComponent implements OnInit {
 
   private subscribe(){
     this.backendService.webSocketSubject?.subscribe({
-      next : this.processMessageFromServer,
-      error : this.processErrorSignalFromServer,
-      complete : this.processCompleteSignalFromServer
+      next : this.processMessageFromServer.bind(this),
+      error : this.processErrorSignalFromServer.bind(this),
+      complete : this.processCompleteSignalFromServer.bind(this)
     })
     this.connectionStatus = 'Connecting'
+    this.backendService.webSocketSubject?.next(new ConnectRequest(this.userProfile.id, this.userProfile.name))
   }
 
   private merge(newChats:Chat[]){
     // do not accept new chat if the chat with same id alredy present
     _.forEach(newChats, (chat, _) => {
-      if(this.chats.has(chat.getChatId())) return
+      const newChatId = chat.getChatId()
+      if(this.chats.has(newChatId)) return
+      this.chats.set(newChatId,chat)
     })
   }
 
