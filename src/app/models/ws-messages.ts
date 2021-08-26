@@ -31,13 +31,16 @@ export class PinnedChats implements BaseIncomingMessage {
         if (!obj) return null
         const chats = _.get(obj, 'chats')
         if (!chats || !_.isArray(chats)) return null
-        const result = _.map<any, Chat | null>(_.filter(chats, chat => {
-            const chatType = _.get(chat, PropertyName_Type)
-            return chatType === TypeName_ResponseSingleChat || chatType === TypeName_ResponseGroupChat
-        }), chat => {
-            const chatType = _.get(chat, PropertyName_Type)
-            return chatType === TypeName_ResponseSingleChat ? SingleChat.fromAnyObj(chat) : GroupChat.fromAnyObj(chat)
-        })
+        const result = _.chain(chats).
+            filter(chat => {
+                const chatType = _.get(chat, PropertyName_Type)
+                return chatType === TypeName_ResponseSingleChat || chatType === TypeName_ResponseGroupChat
+            }).
+            map(chat => {
+                const chatType = _.get(chat, PropertyName_Type)
+                return chatType === TypeName_ResponseSingleChat ? SingleChat.fromAnyObj(chat) : GroupChat.fromAnyObj(chat)
+            }).
+            value()
         return new PinnedChats(_.filter(result, nonEmpty))
     }
 }

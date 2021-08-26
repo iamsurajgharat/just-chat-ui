@@ -1,5 +1,7 @@
 {
     "files.watcherExclude": {
         "**/target": true
-    }
+    },
+    "editor.fontFamily": "Fira Code",
+    "editor.fontLigatures": true
 }
