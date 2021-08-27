@@ -15,16 +15,20 @@ import { random } from 'lodash';
 })
 export class ChatListComponent implements OnInit {
   userProfile!: UserProfile
-  connectionStatus : 'Not Started'|'Connecting' | 'Connected' | 'Closed' | 'Error' = 'Not Started'
-  chats: Map<string,Chat> = new Map<string,Chat>()
+  connectionStatus: 'Not Started' | 'Connecting' | 'Connected' | 'Closed' | 'Error' = 'Not Started'
+  chats: Map<string, Chat> = new Map<string, Chat>()
   selectedChat?: Chat
   constructor(private backendService: BackendService, private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
 
-    if(!this.backendService.isConnected) this.router.navigate(["signin"])
+    // if user is not signed in, redirect to sign in page
+    if (!this.backendService.isConnected) this.router.navigate(["signin"])
 
-    this.userProfile = new UserProfile('iamsurajgharat'+ random(), 'Suraj Gharat')
+    // get current user
+    this.userProfile = this.backendService.currentUser!
+
+    // make server connection
     this.subscribe()
 
     // get user details along with ws connection as input
@@ -75,6 +79,10 @@ export class ChatListComponent implements OnInit {
     this.selectedChat = undefined
   }
 
+  get chatList(): Chat[] {
+    return Array.from(this.chats.values())
+  }
+
   private isSingleChat(chat: Chat): chat is SingleChat {
     return chat instanceof SingleChat
   }
@@ -83,41 +91,41 @@ export class ChatListComponent implements OnInit {
     return chat instanceof GroupChat
   }
 
-  private processMessageFromServer(message:BaseMessage){
+  private processMessageFromServer(message: BaseMessage) {
 
-    if(message instanceof ConnectedResponse){
+    if (message instanceof ConnectedResponse) {
       this.connectionStatus = 'Connected'
     }
-    else if(message instanceof PinnedChats){
+    else if (message instanceof PinnedChats) {
       this.merge(message.chats)
     }
   }
 
-  private processErrorSignalFromServer(error:any){
+  private processErrorSignalFromServer(error: any) {
     this.connectionStatus = 'Error'
-    console.log("Error from server :"+error)
+    console.log("Error from server :" + error)
   }
 
-  private processCompleteSignalFromServer(){
+  private processCompleteSignalFromServer() {
     this.connectionStatus = 'Closed'
   }
 
-  private subscribe(){
+  private subscribe() {
     this.backendService.webSocketSubject?.subscribe({
-      next : this.processMessageFromServer.bind(this),
-      error : this.processErrorSignalFromServer.bind(this),
-      complete : this.processCompleteSignalFromServer.bind(this)
+      next: this.processMessageFromServer.bind(this),
+      error: this.processErrorSignalFromServer.bind(this),
+      complete: this.processCompleteSignalFromServer.bind(this)
     })
     this.connectionStatus = 'Connecting'
     this.backendService.webSocketSubject?.next(new ConnectRequest(this.userProfile.id, this.userProfile.name))
   }
 
-  private merge(newChats:Chat[]){
+  private merge(newChats: Chat[]) {
     // do not accept new chat if the chat with same id alredy present
     _.forEach(newChats, (chat, _) => {
       const newChatId = chat.getChatId()
-      if(this.chats.has(newChatId)) return
-      this.chats.set(newChatId,chat)
+      if (this.chats.has(newChatId)) return
+      this.chats.set(newChatId, chat)
     })
   }
 

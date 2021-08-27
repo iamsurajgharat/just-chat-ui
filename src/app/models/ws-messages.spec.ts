@@ -46,16 +46,16 @@ describe('PinnedChats', () => {
     }
   }
 
-  function createSampleGroupProfile(id: string, name: string, ...users:UserProfile[]): any {
+  function createSampleGroupProfile(id: string, name: string, ...users: UserProfile[]): any {
     return {
       _type: WsMessages.TypeName_ResponseGroupProfile,
-      id : id,
-      name : name,
+      id: id,
+      name: name,
       members: [...users]
     }
   }
 
-  function createSampleGroupChat(id: string, name: string, ...users:UserProfile[]): any {
+  function createSampleGroupChat(id: string, name: string, ...users: UserProfile[]): any {
     return {
       _type: WsMessages.TypeName_ResponseGroupChat,
       profile: createSampleGroupProfile(id, name, ...users)
@@ -101,5 +101,24 @@ describe('PinnedChats', () => {
     const singleChat = result?.chats[0] as SingleChat
     expect(singleChat.getChatId()).toBe('id1')
     expect(singleChat.name).toBe('Bruce Wayne')
+  });
+
+  it('should create an instance from given any for single and group chats', () => {
+    // arrange
+    const obj = {
+      _type: WsMessages.TypeName_ResponsePinnedChats,
+      chats: [createSampleSingleChat('id1', 'Bruce Wayne'), createSampleGroupChat('group1', 'Free folks', createSampleUserProfile('u1', 'Tony Stark'), createSampleUserProfile('u2', 'Steve Rogers'))]
+    }
+
+    // act
+    const result = WsMessages.PinnedChats.fromAnyObj(obj)
+
+    // assure
+    expect(result).toBeTruthy();
+    expect(result?.chats).toHaveSize(2)
+    expect(result?.chats[0]).toBeTruthy()
+    expect(result?.chats[0] instanceof SingleChat).toBeTrue()
+    expect(result?.chats[1]).toBeTruthy()
+    expect(result?.chats[1] instanceof GroupChat).toBeTrue()
   });
 });

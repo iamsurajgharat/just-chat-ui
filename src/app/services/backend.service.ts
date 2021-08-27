@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import {map} from 'rxjs/operators'
+import { map } from 'rxjs/operators'
 import { UserProfile } from '../models/user-profile';
 import { allBaseMessages, BaseMessage, ConnectedResponse, ConnectRequest, InvalidMessage, PinnedChats, TypeName_ResponseConnected, TypeName_ResponsePinnedChats, TypeName_ResponseSingleChat, TypeName_ResponseUserProfile } from '../models/ws-messages';
 import { webSocket, WebSocketSubject, WebSocketSubjectConfig } from 'rxjs/webSocket'
@@ -12,9 +12,9 @@ import { SingleChat } from '../models/chat';
   providedIn: 'root'
 })
 export class BackendService {
-
-  isConnected :boolean = false
-  webSocketSubject:WebSocketSubject<BaseMessage>|undefined
+  currentUser: UserProfile | undefined
+  isConnected: boolean = false
+  webSocketSubject: WebSocketSubject<BaseMessage> | undefined
 
   constructor() { }
 
@@ -22,7 +22,10 @@ export class BackendService {
   // connect
   connect(user: UserProfile): ConnectResponse {
 
+    // set and hold current user info
+    this.currentUser = user
 
+    // prepare for web-socket connenction request
     const webSocketSubjectConfig: WebSocketSubjectConfig<BaseMessage> = {
       url: `ws://localhost:8081/socket3?userId=${encodeURIComponent(user.id)}&name=${encodeURIComponent(user.name)}`,
       deserializer: this.webSocketResponseDeserializer.bind(this)
@@ -59,7 +62,7 @@ export class BackendService {
     return this.convertObjToBaseMessage(responseObj) as BaseMessage
   }
 
-  convertObjToBaseMessage(responseObj:any) : BaseMessage{
+  convertObjToBaseMessage(responseObj: any): BaseMessage {
     if (_.has(responseObj, '_type')) {
       const type = _.get(responseObj, '_type')
       switch (type) {
@@ -72,10 +75,12 @@ export class BackendService {
     return new ConnectedResponse('')
   }
 
-  convertArrayToBaseMessages(responseObj:any): BaseMessage[]{
-    if(!_.isArray(responseObj)) return []
+  convertArrayToBaseMessages(responseObj: any): BaseMessage[] {
+    if (!_.isArray(responseObj)) return []
     return _.toArray(responseObj).map(x => this.convertObjToBaseMessage(x))
   }
+
+
 
   // disconnect
   // search by userid
