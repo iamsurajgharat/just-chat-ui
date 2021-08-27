@@ -48,3 +48,17 @@ type DeliveryDetail = {
     deliveryDate?: Date,
     readDate?: Date
 }
+
+/*
+id
+message-content
+senderId
+targetId (recepientid | groupid)
+type (single|group)
+sent-time
+delivered-time (multiples, in case of group)
+red-time (multiples, in case of group)
+
+
+
+*/

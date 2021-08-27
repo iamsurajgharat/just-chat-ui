@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators'
 import { UserProfile } from '../models/user-profile';
-import { allBaseMessages, BaseMessage, ConnectedResponse, ConnectRequest, InvalidMessage, PinnedChats, TypeName_ResponseConnected, TypeName_ResponsePinnedChats, TypeName_ResponseSingleChat, TypeName_ResponseUserProfile } from '../models/ws-messages';
+import { allBaseMessages, BaseMessage, ConnectedResponse, ConnectRequest, InvalidMessage, PinnedChatsIn, TypeName_ResponseConnected, TypeName_ResponsePinnedChats, TypeName_ResponseSingleChat, TypeName_ResponseUserProfile } from '../models/ws-messages';
 import { webSocket, WebSocketSubject, WebSocketSubjectConfig } from 'rxjs/webSocket'
 import * as _ from 'lodash'
 import { SingleChat } from '../models/chat';
@@ -69,7 +69,7 @@ export class BackendService {
         case TypeName_ResponseConnected:
           return ConnectedResponse.fromAnyObj(responseObj) || InvalidMessage.getInstance(responseObj)
         case TypeName_ResponsePinnedChats:
-          return PinnedChats.fromAnyObj(responseObj) || InvalidMessage.getInstance(responseObj)
+          return PinnedChatsIn.fromAnyObj(responseObj) || InvalidMessage.getInstance(responseObj)
       }
     }
     return new ConnectedResponse('')
