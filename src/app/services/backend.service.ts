@@ -1,12 +1,12 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators'
+import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { UserProfile } from '../models/user-profile';
-import { allBaseMessages, BaseMessage, ConnectedResponse, ConnectRequest, InvalidMessage, PinnedChats, TypeName_ResponseConnected, TypeName_ResponsePinnedChats, TypeName_ResponseSingleChat, TypeName_ResponseUserProfile } from '../models/ws-messages';
-import { webSocket, WebSocketSubject, WebSocketSubjectConfig } from 'rxjs/webSocket'
+import { BaseMessage, ConnectedResponse, InvalidMessage, PinnedChats, TypeName_ResponseConnected, TypeName_ResponsePinnedChats, TypeName_ResponseSingleChat, TypeName_ResponseUserProfile } from '../models/ws-messages';
+import { WebSocketSubjectConfig } from 'rxjs/webSocket'
 import * as _ from 'lodash'
-import { SingleChat } from '../models/chat';
+import { WebSocketService, WebSocketSubjectService } from './web-socket.service';
+import { APP_SETTINGS_TOKEN, AppSettings } from './app-setting.service'
 
+export const BaseMessageWebSocketServiceToken = new InjectionToken<WebSocketService<BaseMessage>>('')
 
 @Injectable({
   providedIn: 'root'
@@ -14,25 +14,31 @@ import { SingleChat } from '../models/chat';
 export class BackendService {
   currentUser: UserProfile | undefined
   isConnected: boolean = false
-  webSocketSubject: WebSocketSubject<BaseMessage> | undefined
+  webSocketSubject: WebSocketSubjectService<BaseMessage> | undefined
 
-  constructor() { }
+  constructor(@Inject(BaseMessageWebSocketServiceToken) private webSocketService: WebSocketService<BaseMessage>,
+    @Inject(APP_SETTINGS_TOKEN) private appSettings: AppSettings) { }
 
   // actions we need to support
   // connect
   connect(user: UserProfile): ConnectResponse {
 
+    // validate input
+    if (!user.id || !user.name) {
+      return { isSuccess: false, errorDetails: 'Required user id and name' }
+    }
     // set and hold current user info
     this.currentUser = user
 
     // prepare for web-socket connenction request
+    const endpoint = `ws://${this.appSettings.serverUrl}/socket3?userId=${encodeURIComponent(user.id)}&name=${encodeURIComponent(user.name)}`;
     const webSocketSubjectConfig: WebSocketSubjectConfig<BaseMessage> = {
-      url: `ws://localhost:8081/socket3?userId=${encodeURIComponent(user.id)}&name=${encodeURIComponent(user.name)}`,
+      url: endpoint,
       deserializer: this.webSocketResponseDeserializer.bind(this)
     }
 
     //const webSocketSubject = webSocket("ws://localhost:8081/socket3")
-    this.webSocketSubject = webSocket(webSocketSubjectConfig)
+    this.webSocketSubject = this.webSocketService.webSocket(webSocketSubjectConfig)
     // webSocketSubject.subscribe({
     //   next(x) { console.log('got value ' + x + 'of type ' + (x as ConnectedResponse).ackMsg); },
     //   error(err) { console.error('something wrong occurred: ' + err); },
@@ -57,12 +63,12 @@ export class BackendService {
     }
   }
 
-  webSocketResponseDeserializer(event: MessageEvent<any>): BaseMessage {
+  private webSocketResponseDeserializer(event: MessageEvent<any>): BaseMessage {
     const responseObj = JSON.parse(event.data)
     return this.convertObjToBaseMessage(responseObj) as BaseMessage
   }
 
-  convertObjToBaseMessage(responseObj: any): BaseMessage {
+  private convertObjToBaseMessage(responseObj: any): BaseMessage {
     if (_.has(responseObj, '_type')) {
       const type = _.get(responseObj, '_type')
       switch (type) {
@@ -74,13 +80,6 @@ export class BackendService {
     }
     return new ConnectedResponse('')
   }
-
-  convertArrayToBaseMessages(responseObj: any): BaseMessage[] {
-    if (!_.isArray(responseObj)) return []
-    return _.toArray(responseObj).map(x => this.convertObjToBaseMessage(x))
-  }
-
-
 
   // disconnect
   // search by userid
@@ -98,5 +97,5 @@ export class BackendService {
 export type ConnectResponse = {
   isSuccess: boolean,
   errorDetails?: string,
-  stream: WebSocketSubject<BaseMessage>
+  stream?: WebSocketSubjectService<BaseMessage>
 }

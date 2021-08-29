@@ -8,9 +8,9 @@ describe('ChatListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ChatListComponent ]
+      declarations: [ChatListComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
@@ -22,4 +22,32 @@ describe('ChatListComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  describe('ngOnInit', () => {
+    let component: ChatListComponent;
+    let fixture: ComponentFixture<ChatListComponent>;
+
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
+        declarations: [ChatListComponent]
+      })
+        .compileComponents();
+    });
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(ChatListComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    });
+
+    it('should navigate to sign-in page if not connected to backend-service', () => {
+
+      // act
+      //component.ngOnInit()
+    });
+  });
 });
+
+
+
+

@@ -6,7 +6,6 @@ import { UserProfile } from '../models/user-profile';
 import { BaseMessage, ConnectedResponse, ConnectRequest, PinnedChats } from '../models/ws-messages';
 import { BackendService } from '../services/backend.service'
 import * as _ from 'lodash'
-import { random } from 'lodash';
 
 @Component({
   selector: 'app-chat-list',
@@ -23,7 +22,10 @@ export class ChatListComponent implements OnInit {
   ngOnInit(): void {
 
     // if user is not signed in, redirect to sign in page
-    if (!this.backendService.isConnected) this.router.navigate(["signin"])
+    if (!this.backendService.isConnected) {
+      this.router.navigate(["signin"])
+      return
+    }
 
     // get current user
     this.userProfile = this.backendService.currentUser!
