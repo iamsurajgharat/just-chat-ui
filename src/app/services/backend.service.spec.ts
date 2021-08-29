@@ -93,7 +93,7 @@ describe('BackendService', () => {
       const result = deserializer!(myMessage as MessageEvent)
 
       expect(result).toBeTruthy()
-      expect(result).toBeInstanceOf(WsMessages.PinnedChats)
+      expect(result).toBeInstanceOf(WsMessages.PinnedChatsIn)
     });
   });
 });

@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Chat, GroupChat, SingleChat } from '../models/chat';
 import { InboundChatMessage, OutboundChatMessage } from '../models/chat-message';
 import { UserProfile } from '../models/user-profile';
-import { BaseMessage, ConnectedResponse, ConnectRequest, PinnedChats } from '../models/ws-messages';
+import { BaseMessage, ConnectedResponse, ConnectRequest, PinnedChatsIn } from '../models/ws-messages';
 import { BackendService } from '../services/backend.service'
 import * as _ from 'lodash'
 
@@ -94,13 +94,16 @@ export class ChatListComponent implements OnInit {
   }
 
   private processMessageFromServer(message: BaseMessage) {
+    if (message instanceof ConnectedResponse) this.processConnectedResponse(message)
+    else if (message instanceof PinnedChatsIn) this.processPinnedChats(message)
+  }
 
-    if (message instanceof ConnectedResponse) {
-      this.connectionStatus = 'Connected'
-    }
-    else if (message instanceof PinnedChats) {
-      this.merge(message.chats)
-    }
+  private processConnectedResponse(message :ConnectedResponse){
+    this.connectionStatus = 'Connected'
+  }
+
+  private processPinnedChats(message :PinnedChatsIn){
+    this.merge(message.chats)
   }
 
   private processErrorSignalFromServer(error: any) {

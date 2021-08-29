@@ -1,6 +1,7 @@
 import { Chat, GroupChat, SingleChat } from "./chat"
 import * as _ from 'lodash'
 import { nonEmpty } from "../utility/common-util"
+import { ChatMessage } from "./chat-message"
 
 export const PropertyName_Type = '_type'
 export const TypeName_ResponseConnected = 'actors.UserSessionActor2.Connected'
@@ -25,9 +26,9 @@ export class ConnectedResponse implements BaseIncomingMessage {
     }
 }
 
-export class PinnedChats implements BaseIncomingMessage {
+export class PinnedChatsIn implements BaseIncomingMessage {
     constructor(public chats: Chat[]) { }
-    static fromAnyObj(obj: any): PinnedChats | null {
+    static fromAnyObj(obj: any): PinnedChatsIn | null {
         if (!obj) return null
         const chats = _.get(obj, 'chats')
         if (!chats || !_.isArray(chats)) return null
@@ -41,8 +42,13 @@ export class PinnedChats implements BaseIncomingMessage {
                 return chatType === TypeName_ResponseSingleChat ? SingleChat.fromAnyObj(chat) : GroupChat.fromAnyObj(chat)
             }).
             value()
-        return new PinnedChats(_.filter(result, nonEmpty))
+        return new PinnedChatsIn(_.filter(result, nonEmpty))
     }
+}
+
+export class ChatMessageIn implements BaseIncomingMessage{
+    constructor(public chatMessage:ChatMessage){}
+    
 }
 
 export class InvalidMessage implements BaseMessage {
@@ -65,4 +71,4 @@ export class ConnectRequest implements BaseOutgoingMessage {
     constructor(public userId: string, public name: string) { }
 }
 
-export type allBaseMessages = ConnectedResponse | PinnedChats
+export type allBaseMessages = ConnectedResponse | PinnedChatsIn

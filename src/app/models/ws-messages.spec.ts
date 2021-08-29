@@ -70,7 +70,7 @@ describe('PinnedChats', () => {
     }
 
     // act
-    const result = WsMessages.PinnedChats.fromAnyObj(obj)
+    const result = WsMessages.PinnedChatsIn.fromAnyObj(obj)
 
     // assure
     expect(result).toBeTruthy();
@@ -91,7 +91,7 @@ describe('PinnedChats', () => {
     }
 
     // act
-    const result = WsMessages.PinnedChats.fromAnyObj(obj)
+    const result = WsMessages.PinnedChatsIn.fromAnyObj(obj)
 
     // assure
     expect(result).toBeTruthy();
@@ -111,7 +111,7 @@ describe('PinnedChats', () => {
     }
 
     // act
-    const result = WsMessages.PinnedChats.fromAnyObj(obj)
+    const result = WsMessages.PinnedChatsIn.fromAnyObj(obj)
 
     // assure
     expect(result).toBeTruthy();
