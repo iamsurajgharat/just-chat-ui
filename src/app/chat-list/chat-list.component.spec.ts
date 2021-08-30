@@ -278,7 +278,7 @@ describe('ChatListComponent', () => {
 
   });
 
-  fdescribe('chat-detail', () => {
+  describe('chat-detail', () => {
     let observer: PartialObserver<BaseMessage>
     const warMachine = new UserProfile('u2', 'James Rhodes')
     const captainAmerica = new UserProfile('u3', 'Steve Rogers')

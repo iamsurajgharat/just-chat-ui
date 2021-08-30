@@ -6,11 +6,12 @@ import * as _ from 'lodash'
 export class Chat {
     pinned: boolean = false
     messages: ChatMessage[] = []
-    constructor(public name: string) {
-    }
+    recentActivityTime?: Date
+    constructor(public name: string) { }
 
     addMessage(message: ChatMessage) {
         this.messages.push(message)
+        this.recentActivityTime = new Date()
     }
 
     get lastMessage(): ChatMessage | undefined {
