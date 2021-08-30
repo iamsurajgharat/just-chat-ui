@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { PartialObserver } from 'rxjs';
+import { ChatDetailComponent } from '../chat-detail/chat-detail.component';
 import { GroupChat, SingleChat } from '../models/chat';
 import { ChatMessage } from '../models/chat-message';
 import { GroupProfile } from '../models/group-profile';
@@ -29,7 +30,7 @@ describe('ChatListComponent', () => {
     )
     routerSpy = jasmine.createSpyObj('Router', ['navigate'])
     await TestBed.configureTestingModule({
-      declarations: [ChatListComponent],
+      declarations: [ChatListComponent, ChatDetailComponent],
       providers: [
         { provide: BackendService, useValue: backendServiceSpy },
         { provide: Router, useValue: routerSpy }
@@ -213,7 +214,7 @@ describe('ChatListComponent', () => {
       });
     });
 
-    fdescribe('ChatMessageIn', () => {
+    describe('ChatMessageIn', () => {
       const warMachine = new UserProfile('u2', 'James Rhodes')
       const captainAmerica = new UserProfile('u3', 'Steve Rogers')
       beforeEach(() => {
@@ -276,6 +277,62 @@ describe('ChatListComponent', () => {
     });
 
   });
+
+  fdescribe('chat-detail', () => {
+    let observer: PartialObserver<BaseMessage>
+    const warMachine = new UserProfile('u2', 'James Rhodes')
+    const captainAmerica = new UserProfile('u3', 'Steve Rogers')
+    const singleChat = new SingleChat(captainAmerica)
+    const groupChat = new GroupChat(new GroupProfile('group1', 'Avengers', [captainAmerica, warMachine]))
+
+    beforeEach(() => {
+      // make isConnected to return true
+      (Object.getOwnPropertyDescriptor(backendServiceSpy, 'isConnected')?.get as jasmine.Spy<() => boolean>).
+        and.returnValue(true)
+
+      component.ngOnInit()
+
+      observer = webSocketSubjectServiceSpy.subscribe.calls.mostRecent().args[0]
+
+      expect(observer).toBeTruthy()
+      expect(observer.next).toBeTruthy()
+
+      observer.next!(new ConnectedIn('Yes, we are connected!'))
+
+      const chats = [singleChat, groupChat]
+      const pinnedChats = new PinnedChatsIn(chats)
+
+      observer.next!(pinnedChats)
+
+      const message1 = ChatMessage.generateNew('Hey buddy', captainAmerica.id, 'Single', currentUser.id)
+      const message1In = new ChatMessageIn(message1)
+      message1.markItSent()
+
+      observer.next!(message1In)
+      fixture.detectChanges()
+    });
+
+    it('should select and display the chat in detail', () => {
+      component.selectChat(singleChat)
+      fixture.detectChanges()
+
+      expect(outerMainElement.querySelector('.message-body-span')?.textContent).toBe('Hey buddy')
+    });
+
+    it('selected chat should get the new message', () => {
+      component.selectChat(singleChat)
+      fixture.detectChanges()
+
+      const message1 = ChatMessage.generateNew('How are you ?', captainAmerica.id, 'Single', currentUser.id)
+      const message1In = new ChatMessageIn(message1)
+      message1.markItSent()
+      observer.next!(message1In)
+      fixture.detectChanges()
+
+      expect(outerMainElement.querySelectorAll('.message-body-span').item(1)?.textContent).toBe('How are you ?')
+    });
+  });
+
 
 });
 

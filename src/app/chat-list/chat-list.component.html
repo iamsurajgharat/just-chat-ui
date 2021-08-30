@@ -42,6 +42,6 @@
         </div>
         <app-chat-detail
             [ngClass]="!selectedChat ? 'd-none d-sm-none d-md-block col col-12 col-md-6 h-100' : 'col col-12 col-md-6 h-100'"
-            [chat]="selectedChat" (close)="unselectChat($event)"></app-chat-detail>
+            [chat]="selectedChat" [currentUser]="userProfile" (close)="unselectChat($event)"></app-chat-detail>
     </div>
 </div>

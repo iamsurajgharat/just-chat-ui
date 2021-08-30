@@ -6,6 +6,7 @@ import { BaseMessage, ChatMessageIn, ConnectedIn, ConnectRequest, PinnedChatsIn 
 import { BackendService } from '../services/backend.service'
 import * as _ from 'lodash'
 import { GroupProfile } from '../models/group-profile';
+import { ChatMessage } from '../models/chat-message';
 
 @Component({
   selector: 'app-chat-list',
@@ -110,6 +111,19 @@ export class ChatListComponent implements OnInit {
       chat.pinned = true
     })
     this.merge(message.chats)
+    // const cm1 = new ChatMessageIn(ChatMessage.generateNew('XXX', message.chats[0].getChatId(), 'Single', this.userProfile.id))
+    // const cm2 = new ChatMessageIn(ChatMessage.generateNew('ABC', message.chats[1].getChatId(), 'Single', this.userProfile.id))
+    // const cm3 = new ChatMessageIn(ChatMessage.generateNew('YYY', this.userProfile.id, 'Single', message.chats[0].getChatId()))
+    // const cm4 = new ChatMessageIn(ChatMessage.generateNew('unknown msg', 'unkownid', 'Single', this.userProfile.id))
+    // cm1.chatMessage.markItSent()
+    // cm2.chatMessage.markItSent()
+    // cm3.chatMessage.markItSent()
+    // cm4.chatMessage.markItSent()
+    // this.processChatMessageIn(cm1)
+    // this.processChatMessageIn(cm2)
+    // this.processChatMessageIn(cm4)
+
+    // this.chats.get(message.chats[0].getChatId())?.addMessage(cm3.chatMessage)
   }
 
   private processChatMessageIn(message: ChatMessageIn) {

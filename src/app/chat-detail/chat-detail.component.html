@@ -1,14 +1,20 @@
 <div *ngIf="chat" class="d-flex flex-column h-100">
     <div class="row border">
         <div class="col text-truncate h4">
-            {{chat.name}}
+            <span class="chat-name-span">{{chat.name}}</span>
         </div>
         <div class="col text-truncate">
-            <button type="button" [ngClass]="'d-sm-block d-md-none btn btn-secondary btn-sm'" (click)="doClose()">Close</button>
+            <button type="button" [ngClass]="'d-sm-block d-md-none btn btn-secondary btn-sm'"
+                (click)="doClose()">Close</button>
         </div>
     </div>
     <div class="row border flex-fill overflow-scroll">
         <div class="chat-messages">
+            <p [ngClass]="message.senderId === currentUser.id ? 'from-me' : 'from-them'"
+                *ngFor="let message of chat.messages">
+                <span class="message-body-span">{{message.body}}</span>
+                <sub>&nbsp;{{message.sentTime}}</sub>
+            </p>
             <p class="from-them">Hey<sub>&nbsp;3.27 PM</sub></p>
             <p class="from-them">How are you doint today<sub><small>&nbsp;3.27 PM</small></sub></p>
             <p class="from-me">Hi<sub>&nbsp;3.27 PM</sub></p>
