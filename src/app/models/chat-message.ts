@@ -1,63 +1,42 @@
-import { UserProfile } from "./user-profile"
+import { v4 as uuidv4 } from 'uuid';
 
-export class ChatMessage {
-    status: ChatMessageStatus = 'New'
-    sentTime?: Date
-    groupId?: string
-    constructor(public id: string, public body: string) {
+export type Status = 'New' | 'Sent' | 'Delivered' | 'Partially Delivered' | 'Partially Delivered-Read' | 'Partially Read' | 'Read'
 
-    }
-
-    markItAsSent() {
-        this.sentTime = new Date()
-        this.status = 'Sent'
-    }
-}
-
-export class InboundChatMessage extends ChatMessage {
-    receiveTime: Date
-    readTime?: Date
-    constructor(public id: string, public body: string, public sender: UserProfile) {
-        super(id, body)
-        this.sentTime = new Date()
-        this.receiveTime = new Date()
-    }
-
-    markItAsRead() {
-        this.readTime = new Date()
-        this.status = 'Read'
-    }
-}
-
-export class OutboundChatMessage extends ChatMessage {
-    deliveryDetails = new Map<string, DeliveryDetail>()
-    constructor(public id: string, public body: string, public recipients: UserProfile[]) {
-        super(id, body)
-        this.sentTime = new Date()
-        for (let recipient of recipients) {
-            this.deliveryDetails.set(recipient.id, { userId: recipient.id, status: 'New' })
-        }
-    }
-}
-
-type ChatMessageStatus = 'New' | 'Sent' | 'Delivered' | 'Partially Delivered' | 'Partially Read' | 'Read'
-
-type DeliveryDetail = {
+export type DeliveryDetail = {
     userId: string,
     status: 'New' | 'Sent' | 'Delivered' | 'Read'
     deliveryDate?: Date,
     readDate?: Date
 }
 
+export type Type = 'Single' | 'Group'
+
+export class ChatMessage {
+    public status: Status = 'New'
+    public sentTime?: Date
+    public deliveryData: DeliveryDetail[] = []
+    constructor(public id: string, public body: string, public senderId: string,
+        public type: Type, public targetId: string) { }
+    static generateNew(body: string, senderId: string,
+        type: Type, targetId: string): ChatMessage {
+        return new ChatMessage(uuidv4(), body, senderId, type, targetId)
+    }
+
+    markItSent() {
+        this.sentTime = new Date()
+        this.status = 'Sent'
+    }
+}
+
 /*
-id
+id (would be gererated at sender)
 message-content
 senderId
-targetId (recepientid | groupid)
 type (single|group)
+targetId (recepientid | groupid)
 sent-time
-delivered-time (multiples, in case of group)
-red-time (multiples, in case of group)
+delivered-time-list (multiples, in case of group)
+red-time-list-list (multiples, in case of group)
 
 
 

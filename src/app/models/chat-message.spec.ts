@@ -1,9 +1,10 @@
-import { ChatMessage, InboundChatMessage } from './chat-message';
-import { UserProfile } from './user-profile';
+import { ChatMessage } from "./chat-message";
 
-describe('InboundChatMessage', () => {
-  it('should create an instance', () => {
-    const result = new InboundChatMessage('msg1', 'Good morning', new UserProfile('id1', 'Shaktimaan'))
+describe('ChatMessage', () => {
+  it('generateNew', () => {
+    const result = ChatMessage.generateNew('Good morning', 'ironman', 'Single', 'capt')
     expect(result).toBeTruthy()
+    expect(result.id).toBeTruthy()
+    expect(result.body).toBe('Good Morning')
   });
 });

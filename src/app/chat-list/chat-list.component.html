@@ -1,10 +1,11 @@
-<div class="container-fluid vh-100">
+<div class="container-fluid vh-100" id="main-outer-container-div" *ngIf="connectionStatus !== 'Not Started'">
     <div class="row h-100">
         <div
             [ngClass]="selectedChat ? 'd-none d-sm-none d-md-block col col-12 col-md-6 h-100' : 'col col-12 col-md-6 h-100'">
             <div class="d-flex flex-column h-100">
                 <div class="h4 border">
-                    {{userProfile.name}} ({{connectionStatus}})
+                    <span id="username-span">{{userProfile.name}} </span>
+                    <span id="connect-status-span">({{connectionStatus}})</span>
                 </div>
                 <div class="border">
                     <div class="input-group">
@@ -17,15 +18,20 @@
                     <div class="chat-item row border" *ngFor="let chat of chatList" (click)="selectChat(chat)">
                         <div class="row">
                             <div class="col h6">
-                                {{chat.name}}
+                                <span class="chat-name-span">{{chat.name}}</span>
                             </div>
-                            <div class="col">{{chat.lastMessage?.sentTime | date}}</div>
+                            <div class="col">
+                                <span class="chat-active-time-span">{{chat.lastMessage?.sentTime | date}}</span>
+                            </div>
                         </div>
                         <div class="row">
-                            <div class="col text-truncate">{{chat.lastMessage?.body}}</div>
+                            <div class="col text-truncate">
+                                <span class="chat-last-message-span">{{chat.lastMessage?.body}}</span>
+                            </div>
                             <div class="col">
                                 <div class="form-check form-switch">
-                                    <input type="checkbox" class="form-check-input" id="switchDefault2" checked="">
+                                    <input type="checkbox" class="form-check-input chat-pinned-checkbox"
+                                        id="switchDefault2" [checked]="chat.pinned">
                                     <label class="form-check-label" for="switchDefault2">Pinned</label>
                                 </div>
                             </div>

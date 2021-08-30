@@ -1,6 +1,6 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { UserProfile } from '../models/user-profile';
-import { BaseMessage, ConnectedResponse, InvalidMessage, PinnedChatsIn, TypeName_ResponseConnected, TypeName_ResponsePinnedChats, TypeName_ResponseSingleChat, TypeName_ResponseUserProfile } from '../models/ws-messages';
+import { BaseMessage, ConnectedIn, InvalidMessage, PinnedChatsIn, TypeName_ResponseConnected, TypeName_ResponsePinnedChats, TypeName_ResponseSingleChat, TypeName_ResponseUserProfile } from '../models/ws-messages';
 import { WebSocketSubjectConfig } from 'rxjs/webSocket'
 import * as _ from 'lodash'
 import { WebSocketService, WebSocketSubjectService } from './web-socket.service';
@@ -73,12 +73,12 @@ export class BackendService {
       const type = _.get(responseObj, '_type')
       switch (type) {
         case TypeName_ResponseConnected:
-          return ConnectedResponse.fromAnyObj(responseObj) || InvalidMessage.getInstance(responseObj)
+          return ConnectedIn.fromAnyObj(responseObj) || InvalidMessage.getInstance(responseObj)
         case TypeName_ResponsePinnedChats:
           return PinnedChatsIn.fromAnyObj(responseObj) || InvalidMessage.getInstance(responseObj)
       }
     }
-    return new ConnectedResponse('')
+    return new ConnectedIn('')
   }
 
   // disconnect

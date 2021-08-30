@@ -76,7 +76,7 @@ describe('BackendService', () => {
       const result = deserializer!(myMessage as MessageEvent)
 
       expect(result).toBeTruthy()
-      expect(result).toBeInstanceOf(WsMessages.ConnectedResponse)
+      expect(result).toBeInstanceOf(WsMessages.ConnectedIn)
     });
 
     it('should convert "PinnedChats" response conrrectly', () => {

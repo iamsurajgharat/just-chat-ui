@@ -14,19 +14,19 @@ export const TypeName_ResponseGroupProfile = 'models.GroupProfile'
 export interface BaseMessage {
 }
 
-export interface BaseIncomingMessage extends BaseMessage {
+export interface BaseMessageIn extends BaseMessage {
 }
 
-export class ConnectedResponse implements BaseIncomingMessage {
+export class ConnectedIn implements BaseMessageIn {
     constructor(public ackMsg: string) { }
-    static fromAnyObj(obj: any): ConnectedResponse | null {
+    static fromAnyObj(obj: any): ConnectedIn | null {
         if (!obj) return null
         const ackMsg = _.get(obj, 'ackMsg') as string
-        return new ConnectedResponse(ackMsg)
+        return new ConnectedIn(ackMsg)
     }
 }
 
-export class PinnedChatsIn implements BaseIncomingMessage {
+export class PinnedChatsIn implements BaseMessageIn {
     constructor(public chats: Chat[]) { }
     static fromAnyObj(obj: any): PinnedChatsIn | null {
         if (!obj) return null
@@ -46,9 +46,16 @@ export class PinnedChatsIn implements BaseIncomingMessage {
     }
 }
 
-export class ChatMessageIn implements BaseIncomingMessage{
-    constructor(public chatMessage:ChatMessage){}
-    
+export class ChatMessageIn implements BaseMessageIn {
+    constructor(public chatMessage: ChatMessage) { }
+}
+
+export class ChatMessageDeliveredIn implements BaseMessageIn {
+    constructor(public id: string, public chatId: string, public userId: string, public time: Date) { }
+}
+
+export class ChatMessageReadIn implements BaseMessageIn {
+    constructor(public id: string, public chatId: string, public userId: string, public time: Date) { }
 }
 
 export class InvalidMessage implements BaseMessage {
@@ -71,4 +78,4 @@ export class ConnectRequest implements BaseOutgoingMessage {
     constructor(public userId: string, public name: string) { }
 }
 
-export type allBaseMessages = ConnectedResponse | PinnedChatsIn
+export type allBaseMessages = ConnectedIn | PinnedChatsIn

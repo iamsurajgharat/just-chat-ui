@@ -4,7 +4,7 @@ import { UserProfile } from "./user-profile";
 import * as _ from 'lodash'
 
 export class Chat {
-    pinned:boolean = false
+    pinned: boolean = false
     messages: ChatMessage[] = []
     constructor(public name: string) {
     }
@@ -13,11 +13,11 @@ export class Chat {
         this.messages.push(message)
     }
 
-    get lastMessage():ChatMessage|null{
-        return this.messages.length === 0 ? null : this.messages[this.messages.length-1]
+    get lastMessage(): ChatMessage | undefined {
+        return _.last(this.messages)
     }
 
-    getChatId():string {
+    getChatId(): string {
         return ''
     }
 }
@@ -27,12 +27,12 @@ export class SingleChat extends Chat {
         super(peer.name)
     }
 
-    getChatId():string {
+    getChatId(): string {
         return this.peer.id
     }
 
-    static fromAnyObj(obj:any):SingleChat | null{
-        if(!obj) return null
+    static fromAnyObj(obj: any): SingleChat | null {
+        if (!obj) return null
         const userProfile = UserProfile.fromAnyObj(_.get(obj, 'member'))
         return userProfile ? new SingleChat(userProfile) : null
     }
@@ -44,12 +44,12 @@ export class GroupChat extends Chat {
         super(peers.name)
     }
 
-    getChatId():string {
+    getChatId(): string {
         return this.peers.id
     }
 
-    static fromAnyObj(obj:any):GroupChat | null{
-        if(!obj) return null
+    static fromAnyObj(obj: any): GroupChat | null {
+        if (!obj) return null
         const groupProfile = GroupProfile.fromAnyObj(_.get(obj, 'profile'))
         return groupProfile ? new GroupChat(groupProfile) : null
     }

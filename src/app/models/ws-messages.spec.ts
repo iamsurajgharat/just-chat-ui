@@ -11,7 +11,7 @@ describe('ConnectedResponse', () => {
     }
 
     // act
-    const result = WsMessages.ConnectedResponse.fromAnyObj(obj)
+    const result = WsMessages.ConnectedIn.fromAnyObj(obj)
 
     // assure
     expect(result).toBeTruthy();
@@ -23,7 +23,7 @@ describe('ConnectedResponse', () => {
     const obj = undefined
 
     // act
-    const result = WsMessages.ConnectedResponse.fromAnyObj(obj)
+    const result = WsMessages.ConnectedIn.fromAnyObj(obj)
 
     // assure
     expect(result).toBeNull();
